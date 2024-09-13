@@ -4,11 +4,11 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { LatLngExpression } from "leaflet";
+import { LatLngLiteral } from "leaflet";
 import LocationMarker from "./LocationMarker";
 
 interface IMapProps {
-    position: LatLngExpression;
+    position: LatLngLiteral;
     zoom: number;
 }
 
