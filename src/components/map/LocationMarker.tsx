@@ -1,39 +1,51 @@
-import { LatLngLiteral } from "leaflet";
+import { fetchAddress } from "@/app/utils/fetchAdress";
+import { Iposition } from "@/interfaces/mapInterfaces";
 import { useState } from "react";
 import { Marker, Popup, useMapEvents } from "react-leaflet";
 
-export default function LocationMarker({
-    position,
-}: {
-    position: LatLngLiteral;
-}) {
-    const [markersPositions, setPosition] = useState([position]);
+export default function LocationMarker({ position }: { position: Iposition }) {
+    const [markersPositions, setMarkersPositions] = useState([position]);
     const map = useMapEvents({
         click() {
             map.locate();
         },
-        dblclick(e) {
-            setPosition([...markersPositions, e.latlng]);
+        async dblclick(e) {
+            const positionInformations = await fetchAddress(e.latlng);
+            setMarkersPositions([
+                ...markersPositions,
+                { latLng: e.latlng, informations: positionInformations },
+            ]);
             map.flyTo(e.latlng, map.getZoom());
         },
     });
 
-    return (
-        markersPositions &&
-        markersPositions.map((markerPosition) => {
-            return (
+    return markersPositions.map((markerPosition) => {
+        const { road, postcode, city, village, country } =
+            markerPosition.informations;
+        const markerNumber = markersPositions.indexOf(markerPosition) + 1;
+        return (
+            markerPosition.latLng && (
                 <Marker
-                    key={`${markerPosition.lat}-${markerPosition.lng}`}
-                    position={markerPosition}
+                    key={`${markerPosition.latLng.lat}-${markerPosition.latLng.lng}`}
+                    position={markerPosition.latLng}
                 >
                     <Popup>
                         <div>
-                            <p>Latitude: {markerPosition.lat}</p>
-                            <p>Longitude: {markerPosition.lng}</p>
+                            <p>{markerNumber}</p>
+                            <p className="text-center">
+                                {road}
+                                <br />
+                                {postcode}
+                                <br />
+                                {city ? city : village}
+                                <br />
+                                {country}
+                                <br />
+                            </p>
                         </div>
                     </Popup>
                 </Marker>
-            );
-        })
-    );
+            )
+        );
+    });
 }
