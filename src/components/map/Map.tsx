@@ -7,11 +7,10 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import LocationMarker from "./LocationMarker";
 import { IMapProps } from "@/interfaces/mapInterfaces";
 
-export default function Map({ position, zoom }: IMapProps) {
-    console.log(position.informations);
+export default function Map({ location, zoom }: IMapProps) {
     return (
         <MapContainer
-            center={position.latLng}
+            center={location.latLng}
             zoom={zoom}
             scrollWheelZoom={true}
             doubleClickZoom={false}
@@ -21,12 +20,7 @@ export default function Map({ position, zoom }: IMapProps) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <LocationMarker
-                position={{
-                    latLng: position.latLng,
-                    informations: position.informations,
-                }}
-            />
+            <LocationMarker />
         </MapContainer>
     );
 }
