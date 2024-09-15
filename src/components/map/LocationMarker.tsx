@@ -1,43 +1,47 @@
-import { fetchAddress } from "@/app/utils/fetchAdress";
-import { Iposition } from "@/interfaces/mapInterfaces";
-import { useState } from "react";
+import { administrativeDivision, fetchAddress, roadType } from "@/utils/utils";
+import { ILocation } from "@/interfaces/mapInterfaces";
 import { Marker, Popup, useMapEvents } from "react-leaflet";
+import { useLocationsStore } from "@/stores/locations-store";
+import LocationBadge from "../LocationBadge";
 
-export default function LocationMarker({ position }: { position: Iposition }) {
-    const [markersPositions, setMarkersPositions] = useState([position]);
+export default function LocationMarker() {
+    const locations = useLocationsStore((state) => state.locations);
+    const addLocation = useLocationsStore((state) => state.addLocation);
+
     const map = useMapEvents({
         click() {
             map.locate();
         },
         async dblclick(e) {
-            const positionInformations = await fetchAddress(e.latlng);
-            setMarkersPositions([
-                ...markersPositions,
-                { latLng: e.latlng, informations: positionInformations },
-            ]);
+            const locationInformations = await fetchAddress(e.latlng);
+            addLocation({
+                latLng: e.latlng,
+                informations: locationInformations,
+                id: locations.length + 1,
+            });
             map.flyTo(e.latlng, map.getZoom());
         },
     });
 
-    return markersPositions.map((markerPosition) => {
-        const { road, postcode, city, village, country } =
-            markerPosition.informations;
-        const markerNumber = markersPositions.indexOf(markerPosition) + 1;
+    return locations.map((location: ILocation) => {
+        const { postcode, country } = location.informations;
         return (
-            markerPosition.latLng && (
+            location.latLng && (
                 <Marker
-                    key={`${markerPosition.latLng.lat}-${markerPosition.latLng.lng}`}
-                    position={markerPosition.latLng}
+                    key={`${location.latLng.lat}-${location.latLng.lng}`}
+                    position={location.latLng}
                 >
                     <Popup>
                         <div>
-                            <p>{markerNumber}</p>
-                            <p className="text-center">
-                                {road}
+                            <p className="flex flex-col items-center text-center">
+                                <LocationBadge>
+                                    {location.id.toString()}
+                                </LocationBadge>
+                                {roadType(location.informations)}
                                 <br />
                                 {postcode}
                                 <br />
-                                {city ? city : village}
+                                {administrativeDivision(location.informations)}
                                 <br />
                                 {country}
                                 <br />
