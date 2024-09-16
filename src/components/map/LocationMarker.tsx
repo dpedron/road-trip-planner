@@ -17,7 +17,7 @@ export default function LocationMarker() {
             addLocation({
                 latLng: e.latlng,
                 informations: locationInformations,
-                id: locations.length + 1,
+                position: locations.length + 1,
             });
             map.flyTo(e.latlng, map.getZoom());
         },
@@ -35,7 +35,7 @@ export default function LocationMarker() {
                         <div>
                             <p className="flex flex-col items-center text-center">
                                 <LocationBadge>
-                                    {location.id.toString()}
+                                    {location.position.toString()}
                                 </LocationBadge>
                                 {roadType(location.informations)}
                                 <br />

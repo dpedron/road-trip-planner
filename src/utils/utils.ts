@@ -9,8 +9,6 @@ export const fetchAddress = async (location: LatLngLiteral) => {
     return responses.address;
 };
 
-// NEED TO CHECK IF THERE'S SOMETHING BETTER
-
 export const administrativeDivision = (
     locationInformations: ILocationInformations
 ) => {
@@ -28,10 +26,9 @@ export const administrativeDivision = (
     return divisionPriority.find((division) => division) || "Unknown location";
 };
 
-// NEED TO CHECK IF THERE'S SOMETHING BETTER
-
 export const roadType = (locationInformations: ILocationInformations) => {
     const {
+        road,
         motorway,
         trunk,
         primary,
@@ -51,6 +48,7 @@ export const roadType = (locationInformations: ILocationInformations) => {
     } = locationInformations;
 
     const roadPriority = [
+        road,
         motorway,
         trunk,
         primary,

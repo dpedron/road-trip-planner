@@ -28,9 +28,9 @@ export interface ILocationInformations {
 }
 
 export interface ILocation {
-    id: number;
     latLng: LatLngLiteral;
     informations: ILocationInformations;
+    position: number;
 }
 
 export interface IMapProps {
