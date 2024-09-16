@@ -17,7 +17,7 @@ export default async function Home() {
                 location={{
                     latLng: { lat: 44.1667, lng: 4.95 },
                     informations: locationInformations,
-                    id: 0,
+                    position: 0,
                 }}
                 zoom={13}
             />
