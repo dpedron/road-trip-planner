@@ -1,5 +1,7 @@
 import { ILocationInformations } from "@/interfaces/mapInterfaces";
+import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { LatLngLiteral } from "leaflet";
+import { Dispatch, SetStateAction } from "react";
 
 export const fetchAddress = async (location: LatLngLiteral) => {
     const response = await fetch(
@@ -68,4 +70,31 @@ export const roadType = (locationInformations: ILocationInformations) => {
     ];
 
     return roadPriority.find((road) => road) || "Unknown road type";
+};
+
+export const handleDragEnd = (
+    event: DragEndEvent,
+    removeLocation: (position: number) => void,
+    setIsDragging: Dispatch<SetStateAction<number>>,
+    setIsOverRemoveZone: Dispatch<SetStateAction<boolean>>
+) => {
+    const { over, active } = event;
+    if (over && over.id === "remove-droppable") {
+        const position = active.data.current && active.data.current.position;
+        removeLocation(position);
+    }
+    setIsDragging(0);
+    setIsOverRemoveZone(false);
+};
+
+export const handleDragOver = (
+    event: DragOverEvent,
+    setIsOverRemoveZone: Dispatch<SetStateAction<boolean>>
+) => {
+    const { over } = event;
+    if (over && over.id === "remove-droppable") {
+        setIsOverRemoveZone(true);
+    } else {
+        setIsOverRemoveZone(false);
+    }
 };
