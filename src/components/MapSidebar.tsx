@@ -1,67 +1,82 @@
 "use client";
 
 import { useLocationsStore } from "@/stores/locations-store";
-import { administrativeDivision, roadType } from "@/utils/utils";
 import { Sidebar } from "flowbite-react";
 import { useState } from "react";
-import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
-import { RiDeleteBin2Line } from "react-icons/ri";
-import LocationBadge from "./LocationBadge";
+import {
+    DndContext,
+    useSensor,
+    useSensors,
+    PointerSensor,
+} from "@dnd-kit/core";
+import DraggableLocation from "./dragAndDrop/DraggableLocation";
+import RearrangeDroppable from "./dragAndDrop/RearrangeDroppable";
+import RemoveDroppable from "./dragAndDrop/RemoveDroppable";
+import { handleDragEnd } from "@/utils/utils";
 export function MapSidebar() {
     const [collapsed, setCollapsed] = useState(true);
+    const [isDragging, setIsDragging] = useState(0);
+
     const locations = useLocationsStore((state) => state.locations);
     const removeLocation = useLocationsStore((state) => state.removeLocation);
+    const rearrangeLocation = useLocationsStore(
+        (state) => state.rearrangeLocation
+    );
+    const sensors = useSensors(useSensor(PointerSensor));
 
     return (
-        <Sidebar collapsed={collapsed}>
-            <button className="p-2" onClick={() => setCollapsed(!collapsed)}>
-                {collapsed ? (
-                    <HiChevronLeft size={24} className="text-gray-500" />
-                ) : (
-                    <div className="flex">
-                        <HiChevronRight size={24} className="text-gray-500" />
-                        <p className="text-gray-800">Mon itinéraire</p>
-                    </div>
-                )}
-            </button>
-            <Sidebar.Items>
-                <Sidebar.ItemGroup>
-                    {locations.map((location) => {
-                        const { postcode, country } = location.informations;
-                        return (
-                            <div
-                                key={`${country}-${location.position}`}
-                                className="group relative"
-                            >
-                                {!collapsed && (
-                                    <div className="absolute group-hover:bg-blue-500/10 rounded-l-full w-full h-full">
-                                        <div className="absolute bg-white top-0 right-0 h-full flex items-center w-0 group-hover:w-fit">
-                                            <RiDeleteBin2Line
-                                                color="red"
-                                                className="cursor-pointer"
-                                                size={25}
-                                                onClick={() =>
-                                                    removeLocation(
-                                                        location.position
-                                                    )
-                                                }
+        <DndContext
+            sensors={sensors}
+            onDragStart={({ active }) => {
+                active.data.current &&
+                    setIsDragging(active.data.current.position);
+            }}
+            onDragEnd={(event) =>
+                handleDragEnd(
+                    event,
+                    removeLocation,
+                    rearrangeLocation,
+                    setIsDragging
+                )
+            }
+        >
+            <div
+                onMouseEnter={() => {
+                    setCollapsed(false);
+                }}
+                onMouseLeave={() => {
+                    setCollapsed(true);
+                }}
+                className="absolute top-0 right-0 h-full w-fit z-[10000]"
+            >
+                <Sidebar
+                    collapsed={collapsed}
+                    className={`${!collapsed ? "[&>:first-child]:px-0 [&>:first-child]:pt-0" : ""}`}
+                >
+                    <Sidebar.Items>
+                        {!collapsed ? <RemoveDroppable /> : <></>}
+                        <Sidebar.ItemGroup>
+                            {locations.map((location) => {
+                                return (
+                                    <div
+                                        key={`${location.informations.country}-${location.position}`}
+                                    >
+                                        <RearrangeDroppable
+                                            position={location.position}
+                                        >
+                                            <DraggableLocation
+                                                collapsed={collapsed}
+                                                location={location}
+                                                isDragging={isDragging}
                                             />
-                                        </div>
+                                        </RearrangeDroppable>
                                     </div>
-                                )}
-                                <p
-                                    className={`text-gray-500 flex justify-center items-center`}
-                                >
-                                    <LocationBadge>
-                                        {location.position.toString()}
-                                    </LocationBadge>
-                                    {`${!collapsed ? ` ${roadType(location.informations)} - ${administrativeDivision(location.informations)} - ${postcode}` : ""}`}
-                                </p>
-                            </div>
-                        );
-                    })}
-                </Sidebar.ItemGroup>
-            </Sidebar.Items>
-        </Sidebar>
+                                );
+                            })}
+                        </Sidebar.ItemGroup>
+                    </Sidebar.Items>
+                </Sidebar>
+            </div>
+        </DndContext>
     );
 }

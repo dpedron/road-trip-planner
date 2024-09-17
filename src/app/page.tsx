@@ -21,9 +21,7 @@ export default async function Home() {
                 }}
                 zoom={13}
             />
-            <div className="absolute top-0 right-0 h-full w-fit z-[10000]">
-                <MapSidebar />
-            </div>
+            <MapSidebar />
         </div>
     );
 }
