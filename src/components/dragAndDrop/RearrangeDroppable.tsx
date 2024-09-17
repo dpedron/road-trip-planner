@@ -3,19 +3,23 @@ import { useDroppable } from "@dnd-kit/core";
 
 export default function RearrangeDroppable({
     children,
+    position,
 }: {
     children: ReactNode;
+    position: number;
 }) {
-    const { isOver, setNodeRef } = useDroppable({
-        id: "droppable",
+    const { setNodeRef, over } = useDroppable({
+        id: `rearrange-droppable-${position}`,
     });
-    const style = {
-        color: isOver ? "green" : undefined,
-    };
 
     return (
-        <div ref={setNodeRef} style={style}>
+        <div ref={setNodeRef}>
             {children}
+            {over?.id === `rearrange-droppable-${position}` ? (
+                <div className="h-12 w-full bg-blue-200" />
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

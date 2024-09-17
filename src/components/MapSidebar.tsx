@@ -12,13 +12,16 @@ import {
 import DraggableLocation from "./dragAndDrop/DraggableLocation";
 import RearrangeDroppable from "./dragAndDrop/RearrangeDroppable";
 import RemoveDroppable from "./dragAndDrop/RemoveDroppable";
-import { handleDragEnd, handleDragOver } from "@/utils/utils";
+import { handleDragEnd } from "@/utils/utils";
 export function MapSidebar() {
     const [collapsed, setCollapsed] = useState(true);
     const [isDragging, setIsDragging] = useState(0);
-    const [isOverRemoveZone, setIsOverRemoveZone] = useState(false);
+
     const locations = useLocationsStore((state) => state.locations);
     const removeLocation = useLocationsStore((state) => state.removeLocation);
+    const rearrangeLocation = useLocationsStore(
+        (state) => state.rearrangeLocation
+    );
     const sensors = useSensors(useSensor(PointerSensor));
 
     return (
@@ -32,11 +35,10 @@ export function MapSidebar() {
                 handleDragEnd(
                     event,
                     removeLocation,
-                    setIsDragging,
-                    setIsOverRemoveZone
+                    rearrangeLocation,
+                    setIsDragging
                 )
             }
-            onDragOver={(event) => handleDragOver(event, setIsOverRemoveZone)}
         >
             <div
                 onMouseEnter={() => {
@@ -52,27 +54,26 @@ export function MapSidebar() {
                     className={`${!collapsed ? "[&>:first-child]:px-0 [&>:first-child]:pt-0" : ""}`}
                 >
                     <Sidebar.Items>
-                        {!collapsed ? (
-                            <RemoveDroppable
-                                isOverRemoveZone={isOverRemoveZone}
-                            />
-                        ) : (
-                            <></>
-                        )}
-                        <RearrangeDroppable>
-                            <Sidebar.ItemGroup>
-                                {locations.map((location) => {
-                                    return (
-                                        <DraggableLocation
-                                            key={`${location.informations.country}-${location.position}`}
-                                            collapsed={collapsed}
-                                            location={location}
-                                            isDragging={isDragging}
-                                        />
-                                    );
-                                })}
-                            </Sidebar.ItemGroup>
-                        </RearrangeDroppable>
+                        {!collapsed ? <RemoveDroppable /> : <></>}
+                        <Sidebar.ItemGroup>
+                            {locations.map((location) => {
+                                return (
+                                    <div
+                                        key={`${location.informations.country}-${location.position}`}
+                                    >
+                                        <RearrangeDroppable
+                                            position={location.position}
+                                        >
+                                            <DraggableLocation
+                                                collapsed={collapsed}
+                                                location={location}
+                                                isDragging={isDragging}
+                                            />
+                                        </RearrangeDroppable>
+                                    </div>
+                                );
+                            })}
+                        </Sidebar.ItemGroup>
                     </Sidebar.Items>
                 </Sidebar>
             </div>

@@ -1,5 +1,5 @@
 import { ILocationInformations } from "@/interfaces/mapInterfaces";
-import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
+import { DragEndEvent } from "@dnd-kit/core";
 import { LatLngLiteral } from "leaflet";
 import { Dispatch, SetStateAction } from "react";
 
@@ -75,26 +75,26 @@ export const roadType = (locationInformations: ILocationInformations) => {
 export const handleDragEnd = (
     event: DragEndEvent,
     removeLocation: (position: number) => void,
-    setIsDragging: Dispatch<SetStateAction<number>>,
-    setIsOverRemoveZone: Dispatch<SetStateAction<boolean>>
+    rearrangeLocation: (
+        locationInitialPosition: number,
+        locationNewPosition: number
+    ) => void,
+    setIsDragging: Dispatch<SetStateAction<number>>
 ) => {
     const { over, active } = event;
-    if (over && over.id === "remove-droppable") {
+    const overId = over?.id.toString();
+
+    if (overId && overId === "remove-droppable") {
         const position = active.data.current && active.data.current.position;
         removeLocation(position);
     }
-    setIsDragging(0);
-    setIsOverRemoveZone(false);
-};
-
-export const handleDragOver = (
-    event: DragOverEvent,
-    setIsOverRemoveZone: Dispatch<SetStateAction<boolean>>
-) => {
-    const { over } = event;
-    if (over && over.id === "remove-droppable") {
-        setIsOverRemoveZone(true);
-    } else {
-        setIsOverRemoveZone(false);
+    if (overId && overId.includes("rearrange-droppable")) {
+        const initialPosition =
+            active.data.current && active.data.current.position;
+        rearrangeLocation(
+            initialPosition,
+            parseInt(overId.replace(/\D+/, ""), 10)
+        );
+        setIsDragging(0);
     }
 };
