@@ -3,12 +3,14 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { LatLngLiteral } from "leaflet";
 import { Dispatch, SetStateAction } from "react";
 
+const NOMINATIM_URL = process.env.NEXT_PUBLIC_NOMINATIM_URL;
+
 export const fetchLocationByLatLng = async (
     location: LatLngLiteral
 ): Promise<ILocation | null> => {
     try {
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}`
+            `${NOMINATIM_URL}/reverse?format=json&lat=${location.lat}&lon=${location.lng}`
         );
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
@@ -22,11 +24,11 @@ export const fetchLocationByLatLng = async (
 
 export const fetchLocationsBySearch = async (
     searchValue: string
-): Promise<ILocation[]> => {
+): Promise<ILocation[] | null> => {
     try {
         const encodedSearchValue = encodeURIComponent(searchValue);
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&addressdetails&q=${encodedSearchValue}`
+            `${NOMINATIM_URL}/search?format=json&addressdetails&q=${encodedSearchValue}`
         );
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
@@ -34,7 +36,7 @@ export const fetchLocationsBySearch = async (
         return await response.json();
     } catch (error) {
         console.error("Error fetching address by search:", error);
-        return [];
+        return null;
     }
 };
 

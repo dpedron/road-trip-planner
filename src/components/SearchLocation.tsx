@@ -73,9 +73,7 @@ export default function SearchLocation() {
                         );
                     })}
                 </ListGroup>
-            ) : (
-                <></>
-            )}
+            ) : null}
         </div>
     );
 }

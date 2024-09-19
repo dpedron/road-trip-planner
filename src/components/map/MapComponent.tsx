@@ -9,21 +9,19 @@ import MapComponentHook from "@/hooks/useMapComponent";
 
 export default function MapComponent() {
     return (
-        <>
-            <MapContainer
-                center={{ lat: 44.1667, lng: 4.95 }}
-                zoom={13}
-                scrollWheelZoom={true}
-                doubleClickZoom={false}
-                className="w-screen h-screen"
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <LocationMarker />
-                <MapComponentHook />
-            </MapContainer>
-        </>
+        <MapContainer
+            center={{ lat: 44.1667, lng: 4.95 }}
+            zoom={13}
+            scrollWheelZoom={true}
+            doubleClickZoom={false}
+            className="w-screen h-screen"
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <LocationMarker />
+            <MapComponentHook />
+        </MapContainer>
     );
 }
