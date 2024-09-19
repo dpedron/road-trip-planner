@@ -6,7 +6,6 @@ export default function RemoveDroppable() {
         id: "remove-droppable",
     });
 
-    console.log(isOver);
     return (
         <div ref={setNodeRef}>
             <div

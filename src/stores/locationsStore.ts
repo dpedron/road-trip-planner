@@ -1,5 +1,5 @@
+import { ILocation } from "@/interfaces/locationInterfaces";
 import { create } from "zustand";
-import { ILocation } from "@/interfaces/mapInterfaces";
 
 interface LocationsState {
     locations: ILocation[];
@@ -20,7 +20,7 @@ export const useLocationsStore = create<LocationsState>((set) => ({
     removeLocation: (locationPosition) =>
         set((state) => {
             const updatedLocations = state.locations.filter(
-                (location) => location.position !== locationPosition
+                (location) => location.positionOnMap !== locationPosition
             );
 
             const resortedPositions = updatedLocations.map(
@@ -37,7 +37,7 @@ export const useLocationsStore = create<LocationsState>((set) => ({
             const { locations } = state;
 
             const initialIndex = locations.findIndex(
-                (location) => location.position === locationInitialPosition
+                (location) => location.positionOnMap === locationInitialPosition
             );
 
             if (initialIndex === -1) return state;
@@ -45,20 +45,19 @@ export const useLocationsStore = create<LocationsState>((set) => ({
             const [movedLocation] = locations.splice(initialIndex, 1);
 
             locations.forEach((location) => {
-                if (
-                    location.position >= locationNewPosition &&
-                    location.position < locationInitialPosition
-                ) {
-                    location.position += 1;
-                } else if (
-                    location.position <= locationNewPosition &&
-                    location.position > locationInitialPosition
-                ) {
-                    location.position -= 1;
+                const isMoveUp =
+                    location.positionOnMap >= locationNewPosition &&
+                    location.positionOnMap < locationInitialPosition;
+                const isMoveDown =
+                    location.positionOnMap <= locationNewPosition &&
+                    location.positionOnMap > locationInitialPosition;
+
+                if (isMoveUp || isMoveDown) {
+                    location.positionOnMap += isMoveUp ? 1 : -1;
                 }
             });
 
-            movedLocation.position = locationNewPosition;
+            movedLocation.positionOnMap = locationNewPosition;
 
             locations.splice(locationNewPosition - 1, 0, movedLocation);
 
