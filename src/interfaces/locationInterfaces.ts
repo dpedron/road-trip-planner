@@ -1,9 +1,5 @@
-import { LatLngLiteral } from "leaflet";
-
-export interface ILocationInformations {
+export interface ILocationAdress {
     road: string;
-    postcode: string;
-    country: string;
     city?: string;
     village?: string;
     town?: string;
@@ -25,15 +21,28 @@ export interface ILocationInformations {
     pedestrian?: string;
     living_street?: string;
     construction?: string;
+    postcode?: string;
+    country?: string;
+    country_code?: string;
+    region?: string;
+    state?: string;
 }
 
 export interface ILocation {
-    latLng: LatLngLiteral;
-    informations: ILocationInformations;
-    position: number;
-}
-
-export interface IMapProps {
-    location: ILocation;
-    zoom: number;
+    address: ILocationAdress;
+    positionOnMap: number;
+    lat: number;
+    lon: number;
+    place_id?: number;
+    licence?: string;
+    osm_type?: string;
+    osm_id?: number;
+    class?: string;
+    type?: string;
+    place_rank?: number;
+    importance?: number;
+    addresstype?: string;
+    name?: string;
+    display_name?: string;
+    boundingbox?: string[];
 }

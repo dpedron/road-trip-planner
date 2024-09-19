@@ -1,21 +1,48 @@
-import { ILocationInformations } from "@/interfaces/mapInterfaces";
+import { ILocation, ILocationAdress } from "@/interfaces/locationInterfaces";
 import { DragEndEvent } from "@dnd-kit/core";
 import { LatLngLiteral } from "leaflet";
 import { Dispatch, SetStateAction } from "react";
 
-export const fetchAddress = async (location: LatLngLiteral) => {
-    const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}`
-    );
-    const responses = await response.json();
-    return responses.address;
+const NOMINATIM_URL = process.env.NEXT_PUBLIC_NOMINATIM_URL;
+
+export const fetchLocationByLatLng = async (
+    location: LatLngLiteral
+): Promise<ILocation | null> => {
+    try {
+        const response = await fetch(
+            `${NOMINATIM_URL}/reverse?format=json&lat=${location.lat}&lon=${location.lng}`
+        );
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching address by lat/lng:", error);
+        return null;
+    }
 };
 
-export const administrativeDivision = (
-    locationInformations: ILocationInformations
-) => {
+export const fetchLocationsBySearch = async (
+    searchValue: string
+): Promise<ILocation[] | null> => {
+    try {
+        const encodedSearchValue = encodeURIComponent(searchValue);
+        const response = await fetch(
+            `${NOMINATIM_URL}/search?format=json&addressdetails&q=${encodedSearchValue}`
+        );
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching address by search:", error);
+        return null;
+    }
+};
+
+export const administrativeDivision = (locationAddress: ILocationAdress) => {
     const { city, town, village, hamlet, suburb, neighbourhood } =
-        locationInformations;
+        locationAddress;
     const divisionPriority = [
         city,
         town,
@@ -28,7 +55,7 @@ export const administrativeDivision = (
     return divisionPriority.find((division) => division) || "Unknown location";
 };
 
-export const roadType = (locationInformations: ILocationInformations) => {
+export const roadType = (locationAddress: ILocationAdress) => {
     const {
         road,
         motorway,
@@ -47,7 +74,7 @@ export const roadType = (locationInformations: ILocationInformations) => {
         living_street,
         construction,
         hamlet,
-    } = locationInformations;
+    } = locationAddress;
 
     const roadPriority = [
         road,

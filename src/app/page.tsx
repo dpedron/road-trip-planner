@@ -1,26 +1,16 @@
 import dynamic from "next/dynamic";
-import { fetchAddress } from "../utils/utils";
 import { MapSidebar } from "@/components/MapSidebar";
+import SearchLocation from "@/components/SearchLocation";
 
-const MapComponent = dynamic(() => import("../components/map/Map"), {
+const MapComponent = dynamic(() => import("../components/map/MapComponent"), {
     ssr: false,
 });
 
 export default async function Home() {
-    const locationInformations = await fetchAddress({
-        lat: 44.1667,
-        lng: 4.95,
-    });
     return (
         <div className="w-screen h-screen">
-            <MapComponent
-                location={{
-                    latLng: { lat: 44.1667, lng: 4.95 },
-                    informations: locationInformations,
-                    position: 0,
-                }}
-                zoom={13}
-            />
+            <MapComponent />
+            <SearchLocation />
             <MapSidebar />
         </div>
     );

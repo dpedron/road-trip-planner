@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocationsStore } from "@/stores/locations-store";
+import { useLocationsStore } from "@/stores/locationsStore";
 import { Sidebar } from "flowbite-react";
 import { useState } from "react";
 import {
@@ -16,7 +16,6 @@ import { handleDragEnd } from "@/utils/utils";
 export function MapSidebar() {
     const [collapsed, setCollapsed] = useState(true);
     const [isDragging, setIsDragging] = useState(0);
-
     const locations = useLocationsStore((state) => state.locations);
     const removeLocation = useLocationsStore((state) => state.removeLocation);
     const rearrangeLocation = useLocationsStore(
@@ -57,12 +56,12 @@ export function MapSidebar() {
                         {!collapsed ? <RemoveDroppable /> : <></>}
                         <Sidebar.ItemGroup>
                             {locations.map((location) => {
+                                const { lat, lon, positionOnMap } = location;
                                 return (
-                                    <div
-                                        key={`${location.informations.country}-${location.position}`}
-                                    >
+                                    <div key={`${lat}-${lon}-${positionOnMap}`}>
                                         <RearrangeDroppable
-                                            position={location.position}
+                                            position={positionOnMap}
+                                            isDragging={isDragging}
                                         >
                                             <DraggableLocation
                                                 collapsed={collapsed}

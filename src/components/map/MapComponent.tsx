@@ -5,13 +5,13 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import LocationMarker from "./LocationMarker";
-import { IMapProps } from "@/interfaces/mapInterfaces";
+import MapComponentHook from "@/hooks/useMapComponent";
 
-export default function Map({ location, zoom }: IMapProps) {
+export default function MapComponent() {
     return (
         <MapContainer
-            center={location.latLng}
-            zoom={zoom}
+            center={{ lat: 44.1667, lng: 4.95 }}
+            zoom={13}
             scrollWheelZoom={true}
             doubleClickZoom={false}
             className="w-screen h-screen"
@@ -21,6 +21,7 @@ export default function Map({ location, zoom }: IMapProps) {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <LocationMarker />
+            <MapComponentHook />
         </MapContainer>
     );
 }
