@@ -11,6 +11,7 @@ import {
 } from "@dnd-kit/core";
 import { Sidebar } from "flowbite-react";
 import { useState } from "react";
+import { FaCircleChevronLeft } from "react-icons/fa6";
 import Divider from "./Divider";
 import DraggableLocation from "./dragAndDrop/DraggableLocation";
 import RearrangeDroppable from "./dragAndDrop/RearrangeDroppable";
@@ -42,28 +43,31 @@ export function MapSidebar() {
                 )
             }
         >
-            <div
-                onMouseEnter={() => {
-                    setIsSidebarCollapsed(false);
-                }}
-                onMouseLeave={() => {
-                    setIsSidebarCollapsed(true);
-                }}
-                className="absolute right-0 top-0 z-[10000] h-full w-fit"
-            >
+            <div className="absolute right-0 top-0 z-[10000] h-full w-fit">
                 <Sidebar
                     collapsed={isSidebarCollapsed}
                     className={`${!isSidebarCollapsed ? "[&>:first-child]:px-0 [&>:first-child]:pt-0" : ""}`}
                 >
                     <Sidebar.Items>
                         <Sidebar.ItemGroup>
-                            {!isSidebarCollapsed ? (
+                            {!isSidebarCollapsed && isDraggingLocation ? (
                                 <>
                                     <RemoveDroppable />
                                     <Divider />
                                 </>
-                            ) : (
-                                <></>
+                            ) : null}
+
+                            {!isDraggingLocation && (
+                                <FaCircleChevronLeft
+                                    className={`mb-4 ml-1 cursor-pointer transition-transform ${isSidebarCollapsed ? "rotate-0" : "ml-2 mt-2 rotate-180"}`}
+                                    size={25}
+                                    color="black"
+                                    onClick={() =>
+                                        setIsSidebarCollapsed(
+                                            !isSidebarCollapsed
+                                        )
+                                    }
+                                />
                             )}
                             {locations.map((location, index) => {
                                 const { lat, lon, positionOnMap } = location;
