@@ -1,6 +1,6 @@
-import dynamic from "next/dynamic";
-import { MapSidebar } from "@/components/MapSidebar";
 import SearchLocation from "@/components/SearchLocation";
+import MapSidebar from "@/components/sidebar/MapSidebar";
+import dynamic from "next/dynamic";
 
 const MapComponent = dynamic(() => import("../components/map/MapComponent"), {
     ssr: false,
@@ -8,7 +8,7 @@ const MapComponent = dynamic(() => import("../components/map/MapComponent"), {
 
 export default async function Home() {
     return (
-        <div className="w-screen h-screen">
+        <div className="h-screen w-screen">
             <MapComponent />
             <SearchLocation />
             <MapSidebar />
