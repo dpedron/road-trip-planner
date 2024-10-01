@@ -1,28 +1,36 @@
 import { NextResponse } from "next/server";
+import osrmTextInstructionsModule from "osrm-text-instructions";
 
 const version = "v5";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const osrmTextInstructions = require("osrm-text-instructions")(version);
+const osrmTextInstructions = osrmTextInstructionsModule(version);
 
-// TODO REFACTO AND IMPROVEMENT AND REMOVE eslint-disable-next-line
 export async function POST(req: Request) {
-    const { steps } = await req.json();
+    try {
+        const { steps } = await req.json();
 
-    if (!steps || !Array.isArray(steps)) {
+        if (!steps || !Array.isArray(steps)) {
+            return NextResponse.json(
+                { error: "Invalid steps format or steps are missing" },
+                { status: 400 }
+            );
+        }
+
+        const instructionsWithDistances = steps.map((step) => {
+            const direction = osrmTextInstructions.compile("en", step);
+            const distance = step.distance;
+            return { direction, distance };
+        });
+
         return NextResponse.json(
-            { error: "Steps are required" },
-            { status: 400 }
+            { instructions: instructionsWithDistances },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error processing request:", error);
+
+        return NextResponse.json(
+            { error: "An internal server error occurred" },
+            { status: 500 }
         );
     }
-
-    const instructionsWithDistances = steps.map((step) => {
-        const direction = osrmTextInstructions.compile("en", step);
-        const distance = step.distance;
-        return { direction, distance };
-    });
-
-    return NextResponse.json(
-        { instructions: instructionsWithDistances },
-        { status: 200 }
-    );
 }
