@@ -1,5 +1,7 @@
 "use client";
 
+import { useItinerariesStore } from "@/stores/itinerariesStore";
+import { getItinerarySummaryInformations } from "@/utils/itineraryUtils";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaCircleChevronDown, FaCircleChevronLeft } from "react-icons/fa6";
 import Divider from "../Divider";
@@ -14,7 +16,9 @@ export default function SidebarHeader({
     setIsSidebarCollapsed,
 }: ISidebarHeaderProps) {
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
-
+    const { itineraries } = useItinerariesStore((state) => state);
+    const { totalDistance, totalDuration, totalConsumption } =
+        getItinerarySummaryInformations(itineraries);
     return (
         <>
             <div className="m-2 flex items-center">
@@ -32,7 +36,7 @@ export default function SidebarHeader({
             {!isSidebarCollapsed ? (
                 <>
                     <Divider />
-                    <div className="!m-0 flex bg-green-100 p-2">
+                    <div className="!m-0 flex bg-green-200 p-2">
                         <p className="mr-2 w-full text-center">
                             Journey summary
                         </p>
@@ -42,6 +46,13 @@ export default function SidebarHeader({
                             onClick={() => setIsSummaryOpen(!isSummaryOpen)}
                         />
                     </div>
+                    {isSummaryOpen ? (
+                        <div className="!m-0 bg-green-100 p-2">
+                            <p>Total distance: {totalDistance}</p>
+                            <p>Total duration: {totalDuration}</p>
+                            <p>Total consumption: {totalConsumption}</p>
+                        </div>
+                    ) : null}
                     <Divider />
                 </>
             ) : null}
