@@ -36,15 +36,17 @@ export const useLocationsStore = create<LocationsState>((set) => ({
         set((state) => {
             const { locations } = state;
 
-            const initialIndex = locations.findIndex(
+            const newLocations = [...locations];
+
+            const initialIndex = newLocations.findIndex(
                 (location) => location.positionOnMap === locationInitialPosition
             );
 
             if (initialIndex === -1) return state;
 
-            const [movedLocation] = locations.splice(initialIndex, 1);
+            const [movedLocation] = newLocations.splice(initialIndex, 1);
 
-            locations.forEach((location) => {
+            newLocations.forEach((location) => {
                 const isMoveUp =
                     location.positionOnMap >= locationNewPosition &&
                     location.positionOnMap < locationInitialPosition;
@@ -58,9 +60,8 @@ export const useLocationsStore = create<LocationsState>((set) => ({
             });
 
             movedLocation.positionOnMap = locationNewPosition;
+            newLocations.splice(locationNewPosition - 1, 0, movedLocation);
 
-            locations.splice(locationNewPosition - 1, 0, movedLocation);
-
-            return { ...state, locations };
+            return { ...state, locations: newLocations };
         }),
 }));

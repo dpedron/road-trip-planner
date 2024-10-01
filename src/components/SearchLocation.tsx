@@ -1,14 +1,14 @@
 "use client";
 
+import useOutsideClick from "@/hooks/useOutsideClick";
+import { ILocation } from "@/interfaces/locationInterfaces";
 import { useLocationsStore } from "@/stores/locationsStore";
+import { useMapStore } from "@/stores/mapStore";
+import { fetchLocationsBySearch } from "@/utils/fetchUtils";
 import { ListGroup, ListGroupItem, TextInput } from "flowbite-react";
 import { useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
 import { IoIosPin } from "react-icons/io";
-import { useMapStore } from "@/stores/mapStore";
-import useOutsideClick from "@/hooks/useOutsideClick";
-import { fetchLocationsBySearch } from "@/utils/utils";
-import { ILocation } from "@/interfaces/locationInterfaces";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function SearchLocation() {
     const [inputLocationValues, setInputLocationValues] = useState<
@@ -36,7 +36,7 @@ export default function SearchLocation() {
 
     return (
         <div
-            className="absolute top-3 left-1/2 transform -translate-x-1/2 z-[10000]"
+            className="absolute left-1/2 top-3 z-[10000] -translate-x-1/2 transform"
             onFocus={() => setIsFocused(true)}
             ref={ref}
         >
@@ -47,7 +47,7 @@ export default function SearchLocation() {
                 className="w-80"
             />
             {isFocused && inputLocationValues ? (
-                <ListGroup className="w-80 left-0 mt-1 overflow-y-scroll overflow-x-hidden h-full max-h-80">
+                <ListGroup className="left-0 mt-1 h-full max-h-80 w-80 overflow-x-hidden overflow-y-scroll">
                     {inputLocationValues.map((location: ILocation) => {
                         const { lat, lon, address, positionOnMap } = location;
                         return (

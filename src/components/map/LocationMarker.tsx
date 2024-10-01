@@ -1,16 +1,12 @@
-import {
-    administrativeDivision,
-    fetchLocationByLatLng,
-    roadType,
-} from "@/utils/utils";
-import { Marker, Popup, useMapEvents } from "react-leaflet";
-import { useLocationsStore } from "@/stores/locationsStore";
-import LocationBadge from "../LocationBadge";
 import { ILocation } from "@/interfaces/locationInterfaces";
+import { useLocationsStore } from "@/stores/locationsStore";
+import { fetchLocationByLatLng } from "@/utils/fetchUtils";
+import { Marker, Popup, useMapEvents } from "react-leaflet";
+import LocationBadge from "../LocationBadge";
+import { roadType, administrativeDivision } from "@/utils/locationUtils";
 
 export default function LocationMarker() {
-    const locations = useLocationsStore((state) => state.locations);
-    const addLocation = useLocationsStore((state) => state.addLocation);
+    const { locations, addLocation } = useLocationsStore((state) => state);
 
     const map = useMapEvents({
         click() {
