@@ -1,15 +1,14 @@
-import React from "react";
+import { ILocation } from "@/interfaces/locationInterfaces";
+import { administrativeDivision, roadType } from "@/utils/locationUtils";
 import { useDraggable } from "@dnd-kit/core";
 import LocationBadge from "../LocationBadge";
-import { administrativeDivision, roadType } from "@/utils/utils";
-import { ILocation } from "@/interfaces/locationInterfaces";
 
 export default function DraggableLocation({
-    collapsed,
+    isSidebarCollapsed,
     location,
     isDragging,
 }: {
-    collapsed: boolean;
+    isSidebarCollapsed: boolean;
     location: ILocation;
     isDragging: number;
 }) {
@@ -28,19 +27,27 @@ export default function DraggableLocation({
         <button
             ref={setNodeRef}
             style={style}
-            {...(!collapsed ? listeners : {})}
+            {...(!isSidebarCollapsed ? listeners : {})}
             {...attributes}
-            className="w-full flex justify-center"
+            className="flex w-full justify-center"
         >
-            <div className="group">
-                <p
-                    className={`flex justify-center items-center rounded-full text-gray-500
-                                                        ${isDragging && !collapsed ? "group-active:bg-blue-500 group-active:text-white" : ""}
-                                                        ${!isDragging && !collapsed ? "group-hover:bg-blue-500/10" : ""}`}
+            <div className="group w-full">
+                <div
+                    className={`flex items-center justify-center py-2 pr-2 ${isDragging && !isSidebarCollapsed ? "group-active:bg-blue-500 group-active:text-white" : ""} ${!isDragging && !isSidebarCollapsed ? "group-hover:bg-blue-500/10" : ""}`}
                 >
                     <LocationBadge>{positionOnMap.toString()}</LocationBadge>
-                    {`${!collapsed ? ` ${roadType(address)} - ${administrativeDivision(address)} - ${address.postcode}` : ""}`}
-                </p>
+                    {!isSidebarCollapsed ? (
+                        <p className="mx-auto text-sm">
+                            {roadType(address)}
+                            <br />
+                            {administrativeDivision(address)}
+                            <br />
+                            {address.postcode}
+                        </p>
+                    ) : (
+                        ""
+                    )}
+                </div>
             </div>
         </button>
     );

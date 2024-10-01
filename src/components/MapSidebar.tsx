@@ -1,74 +1,101 @@
 "use client";
 
+import { useItinerariesStore } from "@/stores/itinerariesStore";
 import { useLocationsStore } from "@/stores/locationsStore";
-import { Sidebar } from "flowbite-react";
-import { useState } from "react";
+import { handleDragEnd } from "@/utils/dragAndDropUtils";
 import {
     DndContext,
+    PointerSensor,
     useSensor,
     useSensors,
-    PointerSensor,
 } from "@dnd-kit/core";
+import { Sidebar } from "flowbite-react";
+import { useState } from "react";
+import Divider from "./Divider";
 import DraggableLocation from "./dragAndDrop/DraggableLocation";
 import RearrangeDroppable from "./dragAndDrop/RearrangeDroppable";
 import RemoveDroppable from "./dragAndDrop/RemoveDroppable";
-import { handleDragEnd } from "@/utils/utils";
+import ItineraryInstructions from "./ItineraryInstructions";
+
 export function MapSidebar() {
-    const [collapsed, setCollapsed] = useState(true);
-    const [isDragging, setIsDragging] = useState(0);
-    const locations = useLocationsStore((state) => state.locations);
-    const removeLocation = useLocationsStore((state) => state.removeLocation);
-    const rearrangeLocation = useLocationsStore(
-        (state) => state.rearrangeLocation
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+    const [isDraggingLocation, setIsDraggingLocation] = useState(0);
+    const { locations, removeLocation, rearrangeLocation } = useLocationsStore(
+        (state) => state
     );
+    const { itineraries } = useItinerariesStore((state) => state);
     const sensors = useSensors(useSensor(PointerSensor));
 
-    return (
+    return locations.length ? (
         <DndContext
             sensors={sensors}
             onDragStart={({ active }) => {
                 active.data.current &&
-                    setIsDragging(active.data.current.position);
+                    setIsDraggingLocation(active.data.current.position);
             }}
             onDragEnd={(event) =>
                 handleDragEnd(
                     event,
                     removeLocation,
                     rearrangeLocation,
-                    setIsDragging
+                    setIsDraggingLocation
                 )
             }
         >
             <div
                 onMouseEnter={() => {
-                    setCollapsed(false);
+                    setIsSidebarCollapsed(false);
                 }}
                 onMouseLeave={() => {
-                    setCollapsed(true);
+                    setIsSidebarCollapsed(true);
                 }}
-                className="absolute top-0 right-0 h-full w-fit z-[10000]"
+                className="absolute right-0 top-0 z-[10000] h-full w-fit"
             >
                 <Sidebar
-                    collapsed={collapsed}
-                    className={`${!collapsed ? "[&>:first-child]:px-0 [&>:first-child]:pt-0" : ""}`}
+                    collapsed={isSidebarCollapsed}
+                    className={`${!isSidebarCollapsed ? "[&>:first-child]:px-0 [&>:first-child]:pt-0" : ""}`}
                 >
                     <Sidebar.Items>
-                        {!collapsed ? <RemoveDroppable /> : <></>}
                         <Sidebar.ItemGroup>
-                            {locations.map((location) => {
+                            {!isSidebarCollapsed ? (
+                                <>
+                                    <RemoveDroppable />
+                                    <Divider />
+                                </>
+                            ) : (
+                                <></>
+                            )}
+                            {locations.map((location, index) => {
                                 const { lat, lon, positionOnMap } = location;
+                                const itineraryKey = `${positionOnMap}-${index + 2}`;
+                                const displayInstructions =
+                                    locations.length > positionOnMap &&
+                                    !isSidebarCollapsed &&
+                                    !isDraggingLocation;
+
                                 return (
-                                    <div key={`${lat}-${lon}-${positionOnMap}`}>
+                                    <div
+                                        key={`${lat}-${lon}-${positionOnMap}`}
+                                        className="!mt-0 text-black"
+                                    >
                                         <RearrangeDroppable
                                             position={positionOnMap}
-                                            isDragging={isDragging}
+                                            isDragging={isDraggingLocation}
                                         >
                                             <DraggableLocation
-                                                collapsed={collapsed}
+                                                isSidebarCollapsed={
+                                                    isSidebarCollapsed
+                                                }
                                                 location={location}
-                                                isDragging={isDragging}
+                                                isDragging={isDraggingLocation}
                                             />
                                         </RearrangeDroppable>
+                                        {displayInstructions ? (
+                                            <ItineraryInstructions
+                                                itineraries={itineraries}
+                                                itineraryKey={itineraryKey}
+                                            />
+                                        ) : null}
                                     </div>
                                 );
                             })}
@@ -77,5 +104,5 @@ export function MapSidebar() {
                 </Sidebar>
             </div>
         </DndContext>
-    );
+    ) : null;
 }
