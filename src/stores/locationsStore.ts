@@ -26,7 +26,7 @@ export const useLocationsStore = create<LocationsState>((set) => ({
             const resortedPositions = updatedLocations.map(
                 (location, index) => ({
                     ...location,
-                    position: index + 1,
+                    positionOnMap: index + 1,
                 })
             );
 

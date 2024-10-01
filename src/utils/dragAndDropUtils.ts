@@ -24,6 +24,6 @@ export const handleDragEnd = (
             initialPosition,
             parseInt(overId.replace(/\D+/, ""), 10)
         );
-        setIsDragging(0);
     }
+    setIsDragging(0);
 };

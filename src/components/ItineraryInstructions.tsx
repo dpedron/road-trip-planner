@@ -21,7 +21,7 @@ export default function ItineraryInstructions({
     const { instructions = [] } = itineraries[itineraryKey] || {};
 
     return (
-        <div className="flex flex-col bg-neutral-100 text-black">
+        <div className="flex flex-col bg-neutral-100">
             <Divider />
             <div className="flex p-2">
                 <p className="mx-auto flex">
